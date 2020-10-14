@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+**This repo was created as a demo for [this Collected Notes note](https://collectednotes.com/lucianoserruyaaloisi/developing-locally-with-firebase)**
+
 ## Available Scripts
 
 In the project directory, you can run:
