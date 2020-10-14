@@ -1,24 +1,61 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { FormEvent, useEffect, useState } from "react";
+import firebase from "firebase/app";
+import "firebase/firestore";
+
+interface Todo {
+  id: string;
+  title: string;
+}
 
 function App() {
+  const [title, setTitle] = useState("");
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const todos = (
+        await firebase.firestore().collection("todos").get()
+      ).docs.map(doc => {
+        return { id: doc.id, ...doc.data() } as Todo;
+      });
+      setTodos(todos);
+    };
+    fetch();
+  });
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      await firebase.firestore().collection("todos").add({ title });
+      alert("To-do created successfully!");
+    } catch (e) {
+      alert("Something went wrong :/");
+    } finally {
+      setTitle("");
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <section>
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="title">Title:</label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            value={title}
+            onChange={e => setTitle(e.target.value)}
+          />
+        </form>
+      </section>
+      <section>
+        <ul>
+          {todos.map((todo, i) => (
+            <li key={i}>{todo.title}</li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }
